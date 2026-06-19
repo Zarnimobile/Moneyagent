@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zar Ni Mobile PRO</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-color: #12151c; --card-bg: #1e222d; --card-border: #2c3240;
+            --text-main: #f1f5f9; --text-muted: #94a3b8; --kbz-blue: #3b82f6;
+            --wave-yellow: #eab308; --game-purple: #a855f7;
+            --success-green: #22c55e; --danger-red: #ef4444;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 10px; padding-bottom: 30px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+        .title-area h5 { margin: 0; font-size: 10px; color: var(--success-green); letter-spacing: 1px; text-transform: uppercase; }
+        .title-area h2 { margin: 4px 0 0; font-size: 14px; font-weight: 500; color: var(--text-muted); }
+        .header-right { display: flex; align-items: center; gap: 6px; }
+        .date-nav-btn { background: var(--card-bg); border: 1px solid var(--card-border); padding: 4px 8px; border-radius: 6px; cursor: pointer; color: var(--text-main); font-size: 12px; line-height: 1; }
+        .date-badge { background: var(--card-bg); border: 1px solid var(--card-border); padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+        .date-badge.is-today { color: var(--success-green); }
+        .date-badge.not-today { color: var(--wave-yellow); }
+        .setting-btn { background: var(--card-bg); border: 1px solid var(--card-border); padding: 4px 8px; border-radius: 6px; cursor: pointer; color: var(--text-main); font-size: 14px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+        .stat-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 8px; border-radius: 8px; text-align: center; }
+        .stat-card span { display: block; font-size: 10px; color: var(--text-muted); margin-bottom: 3px; }
+        .stat-card .value { font-size: 13px; font-weight: 600; }
+        .tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+        .tab-btn { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 8px 4px; text-align: center; border-radius: 6px; font-size: 11px; font-weight: 500; cursor: pointer; }
+        .tab-btn.active { border-color: var(--success-green); color: var(--success-green); background: rgba(34,197,94,0.1); }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .action-title { font-size: 12px; color: var(--success-green); margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+        .type-grid { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+        .type-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .type-btn { background: var(--card-bg); border: 1px solid var(--card-border); padding: 10px 4px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .type-btn.active-out { border-color: var(--danger-red); background: rgba(239,68,68,0.08); }
+        .type-btn.active-in { border-color: var(--kbz-blue); background: rgba(59,130,246,0.08); }
+        .type-title { font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: wrap; }
+        .form-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; margin-bottom: 12px; }
+        .form-group { margin-bottom: 12px; position: relative; }
+        .form-group label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 5px; }
+        .form-group label span { color: var(--wave-yellow); font-size: 10px; }
+        .form-control { width: 100%; background: var(--bg-color); border: 1px solid #3f475e; color: var(--text-main); padding: 10px 12px; border-radius: 8px; font-size: 13px; outline: none; }
+        .form-control:focus { border-color: var(--success-green); box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
+        .form-control.error { border-color: var(--danger-red); }
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+        .suggestions-dropdown { position: absolute; top: 100%; left: 0; right: 0; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 8px; max-height: 180px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; }
+        .suggestion-item { padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--card-border); }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background: rgba(59,130,246,0.1); }
+        .suggestion-phone { font-weight: 600; font-size: 12px; color: var(--kbz-blue); }
+        .suggestion-name { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+        .save-btn { width: 100%; background: var(--success-green); color: #000; border: none; padding: 12px; border-radius: 8px; font-size: 13px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .search-container { margin-bottom: 10px; }
+        .history-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 10px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        th, td { padding: 8px 5px; text-align: left; border-bottom: 1px solid var(--card-border); white-space: nowrap; }
+        th { color: var(--text-muted); font-weight: 500; background: rgba(0,0,0,0.2); }
+        .badge { padding: 3px 5px; border-radius: 4px; font-weight: bold; font-size: 9px; }
+        .bg-kbz { background: rgba(59,130,246,0.2); color: var(--kbz-blue); border: 1px solid rgba(59,130,246,0.3); }
+        .bg-wave { background: rgba(234,179,8,0.2); color: var(--wave-yellow); border: 1px solid rgba(234,179,8,0.3); }
+        .bg-game { background: rgba(168,85,247,0.2); color: var(--game-purple); border: 1px solid rgba(168,85,247,0.3); }
+        .text-red { color: var(--danger-red); }
+        .text-green { color: var(--success-green); }
+        .no-data { text-align: center; color: var(--text-muted); padding: 20px; }
+        .row-details { font-size: 9px; color: var(--text-muted); margin-top: 3px; }
+        .edit-btn { background: none; border: 1px solid #475569; color: var(--text-muted); padding: 2px 5px; border-radius: 4px; font-size: 9px; cursor: pointer; margin-top: 4px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; justify-content: center; align-items: center; padding: 15px; }
+        .modal-box { background: var(--card-bg); border: 1px solid var(--card-border); padding: 16px; border-radius: 12px; width: 100%; max-width: 320px; max-height: 90vh; overflow-y: auto; }
+        .modal-title { margin-top: 0; font-size: 14px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; margin-bottom: 12px; }
+        .modal-btns { display: flex; gap: 10px; margin-top: 12px; }
+        .modal-btns button { flex: 1; padding: 10px; border-radius: 8px; border: none; font-weight: bold; font-size: 12px; cursor: pointer; }
+        .btn-cancel { background: transparent; border: 1px solid #475569 !important; color: white; }
+        .btn-save { background: var(--success-green); color: black; }
+        .btn-danger { background: var(--danger-red); color: white; }
+        .setting-section { border: 1px solid var(--card-border); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: var(--bg-color); }
+        .setting-section h4 { margin: 0 0 10px 0; font-size: 11px; color: var(--success-green); }
+        .setting-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .setting-grid .form-control { padding: 6px 8px; font-size: 12px; }
+        .settings-main-tabs { display: flex; gap: 5px; margin-bottom: 12px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+        .settings-main-tab { flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 6px; font-size: 11px; cursor: pointer; border-radius: 6px; }
+        .settings-main-tab.active { background: var(--success-green); color: black; font-weight: bold; }
+        .settings-main-panel { display: none; }
+        .settings-main-panel.active-panel { display: block; }
+        .percent-sub-tabs { display: flex; gap: 5px; margin-bottom: 12px; }
+        .percent-sub-tab { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-muted); padding: 5px; font-size: 10px; cursor: pointer; border-radius: 6px; text-align: center; }
+        .percent-sub-tab.active { background: var(--kbz-blue); color: white; border-color: var(--kbz-blue); }
+        .percent-sub-panel { display: none; }
+        .percent-sub-panel.active-panel { display: block; }
+        .sync-box { background: rgba(59,130,246,0.05); border: 1px dashed var(--kbz-blue); padding: 12px; border-radius: 10px; margin-bottom: 16px; }
+        .sync-box h4 { margin: 0 0 8px; font-size: 12px; color: var(--kbz-blue); }
+        .btn-sync-out, .btn-sync-in { padding: 8px; border: none; border-radius: 6px; width: 100%; font-size: 11px; cursor: pointer; font-weight: 600; }
+        .btn-sync-out { background: var(--card-border); color: white; margin-bottom: 8px; }
+        .btn-sync-in { background: var(--kbz-blue); color: white; }
+        .report-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+        .report-filter select { flex: 1; background: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-main); padding: 8px; border-radius: 6px; font-size: 12px; }
+        .report-result-card { background: var(--card-bg); border: 1px solid var(--card-border); padding: 12px; border-radius: 10px; }
+        .report-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; }
+        .report-total { font-size: 14px; font-weight: bold; color: var(--wave-yellow); margin-top: 6px; text-align: right; }
+        .action-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); z-index: 9999; justify-content: center; align-items: center; padding: 16px; }
+        .action-overlay.show { display: flex; }
+        .action-box { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 340px; padding: 20px; }
+        .action-icon { text-align: center; font-size: 40px; margin-bottom: 8px; animation: pulse 2s infinite; }
+        .action-title-txt { text-align: center; font-size: 15px; font-weight: 700; }
+        .action-subtitle { text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 4px; margin-bottom: 16px; }
+        .action-detail-box { background: var(--bg-color); border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }
+        .action-row { display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--card-border); }
+        .action-row:last-child { border-bottom: none; padding-bottom: 0; margin-bottom: 0; }
+        .action-row-label { font-size: 11px; color: var(--text-muted); }
+        .action-amount { font-size: 22px; font-weight: 700; }
+        .action-phone { font-size: 16px; font-weight: 700; color: var(--kbz-blue); letter-spacing: 1px; }
+        .action-name { font-size: 13px; font-weight: 600; color: var(--text-main); }
+        .action-done-btn { width: 100%; border: none; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+        
+        .icon-kbz {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: #1E40AF;
+            color: white;
+            font-size: 12px;
+            font-weight: 900;
+            flex-shrink: 0;
+            font-family: monospace;
+        }
+        .icon-wave {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: #F59E0B;
+            color: white;
+            font-size: 14px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+        .icon-game {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .type-btn.active-in .icon-kbz { background: #1E40AF; }
+        .type-btn.active-out .icon-kbz { background: #1E40AF; }
+        .type-btn.active-in .icon-wave { background: #F59E0B; }
+        .type-btn.active-out .icon-wave { background: #F59E0B; }
+
+        .backup-box { background: rgba(34,197,94,0.05); border: 1px dashed var(--success-green); padding: 12px; border-radius: 10px; margin-bottom: 16px; }
+        .backup-box h4 { margin: 0 0 8px 0; font-size: 12px; color: var(--success-green); }
+        .delete-all-btn { width: 100%; background: var(--danger-red); color: white; border: none; padding: 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="title-area">
+        <h5>Zar Ni Mobile • PRO</h5>
+        <h2>ငွေလွှဲ / ငွေထုတ် စာရင်း</h2>
+    </div>
+    <div class="header-right">
+        <button class="date-nav-btn" onclick="changeViewDate(-1)">◀</button>
+        <div class="date-badge is-today" id="currentDate">Date</div>
+        <button class="date-nav-btn" onclick="changeViewDate(+1)">▶</button>
+        <button class="setting-btn" onclick="openSettings()">⚙️</button>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span id="statLabel">ယနေ့ စာရင်းအရေ</span>
+        <div class="value" style="color:var(--kbz-blue);" id="totalCount">0 ခု</div>
+    </div>
+    <div class="stat-card">
+        <span id="commLabel">ယနေ့ ကော်မရှင်ရငွေ</span>
+        <div class="value" style="color:var(--wave-yellow);" id="totalComm">0 Ks</div>
+    </div>
+</div>
+
+<div class="tabs">
+    <div class="tab-btn active" onclick="switchTab('form',this)">ငွေလွှဲ/ထုတ်</div>
+    <div class="tab-btn" onclick="switchTab('history',this)">နေ့စဉ်စာရင်း</div>
+    <div class="tab-btn" onclick="switchTab('summary',this)">စာရင်းချုပ်</div>
+</div>
+
+<div id="view-form" class="view-section active">
+    <div class="action-title"><span>→ အမျိုးအစား ရွေးချယ်ပါ</span></div>
+    <div class="type-grid">
+        <div class="type-row">
+            <div class="type-btn active-in" id="btn-KPay လွှဲ" onclick="selectType('KPay လွှဲ')">
+                <div class="type-title"><span class="icon-kbz">KBZ</span>KPay လွှဲ</div>
+            </div>
+            <div class="type-btn" id="btn-WavePay လွှဲ" onclick="selectType('WavePay လွှဲ')">
+                <div class="type-title"><span class="icon-wave">W</span>Wave လွှဲ</div>
+            </div>
+            <div class="type-btn" id="btn-Game ထည့်" onclick="selectType('Game ထည့်')">
+                <div class="type-title"><span class="icon-game">🎮</span>Game ထည့်</div>
+            </div>
+        </div>
+        <div class="type-row">
+            <div class="type-btn" id="btn-KPay ငွေထုတ်" onclick="selectType('KPay ငွေထုတ်')">
+                <div class="type-title"><span class="icon-kbz">KBZ</span>KPay ငွေထုတ်</div>
+            </div>
+            <div class="type-btn" id="btn-WavePay ငွေထုတ်" onclick="selectType('WavePay ငွေထုတ်')">
+                <div class="type-title"><span class="icon-wave">W</span>Wave ငွေထုတ်</div>
+            </div>
+            <div class="type-btn" id="btn-Game ထုတ်" onclick="selectType('Game ထုတ်')">
+                <div class="type-title"><span class="icon-game">🎮</span>Game ထုတ်</div>
+            </div>
+        </div>
+    </div>
+    <div class="form-card">
+        <div class="form-group">
+            <label>ငွေပမာဏ (Ks) *</label>
+            <input type="number" id="amount" class="form-control" placeholder="ဥပမာ - 50000" inputmode="numeric" oninput="calculateComm()">
+        </div>
+        <div class="form-group">
+            <label>ကော်မရှင် <span>(လိုသလို ပြင်ဆင်နိုင်သည်)</span></label>
+            <input type="number" id="commission" class="form-control" placeholder="Auto တွက်ပေးမည်" inputmode="numeric">
+        </div>
+        <div class="form-group" id="phoneGroup">
+            <label id="phoneLabel">ဖုန်းနံပါတ် <span>(ငွေလွှဲရန်)</span></label>
+            <input type="tel" id="phone" class="form-control" placeholder="09xxxxxxxxx" inputmode="tel" oninput="showPhoneSuggestions()" autocomplete="off">
+            <div id="suggestionsBox" class="suggestions-dropdown"></div>
+            <small id="phoneError" style="color:var(--danger-red);font-size:10px;display:none;">❌ ဖုန်းနံပါတ်မှားယွင်းနေပါသည်။</small>
+        </div>
+        <div class="form-group">
+            <label>အမည် / မှတ်ချက်</label>
+            <input type="text" id="note" class="form-control" placeholder="အမည် သို့မဟုတ် မှတ်ချက်ရေးပါ">
+        </div>
+        <button class="save-btn" onclick="saveRecord()">စာရင်း သေချာမှတ်မည်</button>
+    </div>
+</div>
+
+<div id="view-history" class="view-section">
+    <div class="action-title">
+        <span>→ <span id="historyDateLabel">ယနေ့</span> မှတ်တမ်းများ</span>
+    </div>
+    <div class="search-container">
+        <input type="text" id="searchInput" class="form-control" placeholder="🔍 ဖုန်း / အမည် ဖြင့် ရှာရန်..." oninput="searchHistory()">
+    </div>
+    <div class="history-card">
+        <table>
+            <thead>
+                <tr>
+                    <th>အမျိုးအစား / အချိန်</th>
+                    <th>ဖုန်း / အမည်</th>
+                    <th>ငွေပမာဏ</th>
+                    <th>ကော်မရှင်</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                <tr><td colspan="4" class="no-data">မှတ်တမ်းမရှိသေးပါ။</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="view-summary" class="view-section">
+    
+    <div class="sync-box">
+        <h4>📲 ဝန်ထမ်း မှ ပိုင်ရှင်သို့ စာရင်းဖိုင် ပို့ရန်/သွင်းရန်</h4>
+        <button class="btn-sync-out" onclick="exportDataAsFile()">📥 ယနေ့စာရင်း File အဖြစ် ထုတ်မည်</button>
+        <div style="display:flex;gap:8px;margin-top:8px;">
+            <input type="file" id="importFileInput" class="form-control" accept=".json" style="font-size:11px; padding: 4px;">
+            <button class="btn-sync-in" onclick="importDataFromFile()" style="width:100px;">ပေါင်းထည့်မည်</button>
+        </div>
+    </div>
+    
+    <div class="backup-box">
+        <h4>💾 Data Backup (File ဖြင့် သိမ်းရန်)</h4>
+        <div style="display:flex;gap:8px;">
+            <button class="btn-sync-out" style="background:var(--success-green);color:black;margin:0;flex:1;" onclick="backupToFile()">📥 Backup ဖိုင် ဒေါင်းမည်</button>
+            <button class="btn-sync-in" style="flex:1;" onclick="showRestoreInput()">📤 ဖိုင် ပြန်သွင်းမည်</button>
+        </div>
+        <div id="restoreCodeArea" style="display:none; margin-top:8px;">
+            <input type="file" id="restoreFileInput" class="form-control" accept=".json" style="font-size:11px; padding: 4px; margin-bottom: 6px;">
+            <button class="save-btn" style="padding:8px;" onclick="restoreFromFile()">Restore လုပ်မည်</button>
+        </div>
+        <div class="text-muted" style="font-size:9px; margin-top:6px;">✅ Data များ မပျောက်ပျက်စေရန် Backup ဖိုင်ကို လုံခြုံသောနေရာတွင် သိမ်းထားပါ။</div>
+    </div>
+    
+    <div class="action-title" style="margin-top:10px;"><span>→ လချုပ် / နှစ်ချုပ် ကြည့်ရန်</span></div>
+    <div class="report-filter">
+        <select id="reportMonth" onchange="generateReport()">
+            <option value="All">တစ်နှစ်စာလုံးချုပ်မည်</option>
+            <option value="1">ဇန်နဝါရီ</option><option value="2">ဖေဖော်ဝါရီ</option>
+            <option value="3">မတ်</option><option value="4">ဧပြီ</option>
+            <option value="5">မေ</option><option value="6">ဇွန်</option>
+            <option value="7">ဇူလိုင်</option><option value="8">ဩဂုတ်</option>
+            <option value="9">စက်တင်ဘာ</option><option value="10">အောက်တိုဘာ</option>
+            <option value="11">နိုဝင်ဘာ</option><option value="12">ဒီဇင်ဘာ</option>
+        </select>
+        <select id="reportYear" onchange="generateReport()"></select>
+    </div>
+    <div class="report-result-card">
+        <div class="report-row"><span>စုစုပေါင်း စာရင်းအရေအတွက်:</span><span id="rTotalCount" style="font-weight:bold;">0</span></div>
+        <div class="report-row"><span>KPay ငွေလွှဲ:</span><span id="rKIn">0</span></div>
+        <div class="report-row"><span>KPay ငွေထုတ်:</span><span id="rKOut" class="text-red">0</span></div>
+        <div class="report-row"><span>Wave ငွေလွှဲ:</span><span id="rWIn">0</span></div>
+        <div class="report-row"><span>Wave ငွေထုတ်:</span><span id="rWOut" class="text-red">0</span></div>
+        <div class="report-row"><span>Game ထည့်:</span><span id="rGIn">0</span></div>
+        <div class="report-row"><span>Game ထုတ်:</span><span id="rGOut" class="text-red">0</span></div>
+        <div style="border-top:1px dashed var(--card-border);margin-top:8px;padding-top:8px;">
+            <div class="report-row"><span>ရရှိသော ကော်မရှင် အမြတ်:</span><span id="rComm" class="report-total">+0 Ks</span></div>
+        </div>
+    </div>
+</div>
+
+<div id="actionOverlay" class="action-overlay">
+    <div class="action-box">
+        <div class="action-icon" id="actionIcon">💸</div>
+        <div class="action-title-txt" id="actionTitle"></div>
+        <div class="action-subtitle" id="actionSubtitle"></div>
+        <div class="action-detail-box">
+            <div class="action-row">
+                <span class="action-row-label" id="actionAmountLabel">ငွေပမာဏ</span>
+                <span class="action-amount" id="actionAmount"></span>
+            </div>
+            <div class="action-row" id="actionPhoneRow">
+                <span class="action-row-label">📞 ဖုန်းနံပါတ်</span>
+                <span class="action-phone" id="actionPhone"></span>
+            </div>
+            <div class="action-row" id="actionNameRow">
+                <span class="action-row-label">👤 အမည်</span>
+                <span class="action-name" id="actionName"></span>
+            </div>
+            <div class="action-row" id="actionCommRow">
+                <span class="action-row-label">💸 ကော်မရှင်</span>
+                <span style="font-weight:bold;color:var(--wave-yellow);" id="actionCommWithPercent"></span>
+            </div>
+        </div>
+        <button class="action-done-btn" id="actionDoneBtn" onclick="closeActionOverlay()"></button>
+    </div>
+</div>
+
+<!-- ✅✅✅ Edit Modal - Amount နဲ့ Commission ထည့်ပေးထားပြီး ✅✅✅ -->
+<div id="editModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title">✏️ စာရင်း ပြင်ဆင်ရန်</h3>
+        <input type="hidden" id="editRecordId">
+        
+        <div class="form-group">
+            <label>📞 ဖုန်းနံပါတ်</label>
+            <input type="text" id="editPhone" class="form-control">
+        </div>
+        
+        <div class="form-group">
+            <label>👤 အမည် / မှတ်ချက်</label>
+            <input type="text" id="editNote" class="form-control">
+        </div>
+        
+        <!-- ✅✅✅ ဒီမှာ ကြည့်ပါ - Amount နဲ့ Commission ထည့်ပေးထားပြီး ✅✅✅ -->
+        <div class="form-group">
+            <label>💰 ငွေပမာဏ (Ks)</label>
+            <input type="number" id="editAmount" class="form-control" inputmode="numeric">
+        </div>
+        
+        <div class="form-group">
+            <label>💸 ကော်မရှင် (Ks)</label>
+            <input type="number" id="editCommission" class="form-control" inputmode="numeric">
+        </div>
+        
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="closeModals()">မပြင်တော့ပါ</button>
+            <button class="btn-save" onclick="saveEditData()">သိမ်းမည်</button>
+        </div>
+    </div>
+</div>
+
+<div id="settingsModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title">⚙️ Settings</h3>
+        
+        <div class="settings-main-tabs">
+            <button class="settings-main-tab active" onclick="switchMainSettingTab('percent')">📊 Percentage သတ်မှတ်ရန်</button>
+            <button class="settings-main-tab" onclick="switchMainSettingTab('password')">🔒 Password ပြောင်းရန်</button>
+            <button class="settings-main-tab" onclick="switchMainSettingTab('danger')">⚠️ အခြား</button>
+        </div>
+        
+        <div id="main-panel-percent" class="settings-main-panel active-panel">
+            <div class="percent-sub-tabs">
+                <button class="percent-sub-tab active" onclick="switchPercentSubTab('kpay')">KPay</button>
+                <button class="percent-sub-tab" onclick="switchPercentSubTab('wave')">Wave</button>
+                <button class="percent-sub-tab" onclick="switchPercentSubTab('game')">Game</button>
+            </div>
+            <div id="percent-panel-kpay" class="percent-sub-panel active-panel">
+                <div class="setting-grid">
+                    <div class="form-group"><label>KPay လွှဲ (%)</label><input type="number" id="cfgKIn" class="form-control" step="any"></div>
+                    <div class="form-group"><label>KPay ထုတ် (%)</label><input type="number" id="cfgKOut" class="form-control" step="any"></div>
+                </div>
+            </div>
+            <div id="percent-panel-wave" class="percent-sub-panel">
+                <div class="setting-grid">
+                    <div class="form-group"><label>Wave လွှဲ (%)</label><input type="number" id="cfgWIn" class="form-control" step="any"></div>
+                    <div class="form-group"><label>Wave ထုတ် (%)</label><input type="number" id="cfgWOut" class="form-control" step="any"></div>
+                </div>
+            </div>
+            <div id="percent-panel-game" class="percent-sub-panel">
+                <div class="setting-grid">
+                    <div class="form-group"><label>Game ထည့် (%)</label><input type="number" id="cfgGIn" class="form-control" step="any"></div>
+                    <div class="form-group"><label>Game ထုတ် (%)</label><input type="number" id="cfgGOut" class="form-control" step="any"></div>
+                </div>
+            </div>
+            <div class="modal-btns" style="margin-top:16px;">
+                <button class="btn-cancel" onclick="closeModals()">ပိတ်မည်</button>
+                <button class="btn-save" onclick="saveSettings()">သိမ်းမည်</button>
+            </div>
+        </div>
+        
+        <div id="main-panel-password" class="settings-main-panel">
+            <div class="setting-section">
+                <h4>🔒 Password ပြောင်းရန်</h4>
+                <div class="form-group"><label>လက်ရှိ Password</label><input type="password" id="currentPwd" class="form-control" placeholder="လက်ရှိ password ထည့်ပါ"></div>
+                <div class="form-group"><label>Password အသစ်</label><input type="password" id="newPwd" class="form-control" placeholder="အသစ် အနည်းဆုံး ၃ လုံး"></div>
+                <div class="form-group"><label>အတည်ပြုရန်</label><input type="password" id="confirmPwd" class="form-control" placeholder="Password အသစ် ထပ်ရိုက်ပါ"></div>
+                <button class="save-btn" onclick="changePassword()" style="margin-top:10px;">Password ပြောင်းမည်</button>
+            </div>
+            <div class="modal-btns" style="margin-top:16px;">
+                <button class="btn-cancel" onclick="closeModals()">ပိတ်မည်</button>
+            </div>
+        </div>
+        
+        <div id="main-panel-danger" class="settings-main-panel">
+            <div class="setting-section">
+                <h4 style="color:var(--danger-red);">⚠️ သတိထားရန် ဇုန်</h4>
+                <button class="delete-all-btn" onclick="showDeleteConfirm()">🗑️ စာရင်းအားလုံးဖျက်မည်</button>
+                <div class="text-muted" style="font-size:10px; margin-top:8px;">ဤလုပ်ဆောင်ချက်သည် သင်၏ဒေတာအားလုံးကို ပြန်လည်မရယူနိုင်အောင် ဖျက်ပစ်မည်ဖြစ်သည်။</div>
+            </div>
+            <div class="modal-btns" style="margin-top:16px;">
+                <button class="btn-cancel" onclick="closeModals()">ပိတ်မည်</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="passwordPromptModal" class="modal-overlay">
+    <div class="modal-box">
+        <h3 class="modal-title">🔐 အတည်ပြုရန်</h3>
+        <div class="form-group"><label>Password ထည့်ပါ</label><input type="password" id="deletePassword" class="form-control" placeholder="Password"></div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="closePasswordPrompt()">မဖျက်တော့ပါ</button>
+            <button class="btn-danger" onclick="confirmDeleteAll()">ဖျက်မည်</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const todayStr = new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    let viewDateObj = new Date();
+    let viewDateStr = todayStr;
+
+    function formatDate(d) {
+        return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+    }
+
+    function changeViewDate(delta) {
+        viewDateObj.setDate(viewDateObj.getDate() + delta);
+        viewDateStr = formatDate(viewDateObj);
+        const badge = document.getElementById('currentDate');
+        badge.innerText = viewDateStr;
+        const isToday = (viewDateStr === todayStr);
+        badge.className = 'date-badge ' + (isToday ? 'is-today' : 'not-today');
+        document.getElementById('historyDateLabel').innerText = isToday ? 'ယနေ့' : viewDateStr;
+        document.getElementById('statLabel').innerText = isToday ? 'ယနေ့ စာရင်းအရေ' : viewDateStr+' စာရင်းအရေ';
+        document.getElementById('commLabel').innerText = isToday ? 'ယနေ့ ကော်မရှင်ရငွေ' : viewDateStr+' ကော်မရှင်';
+        updateStats();
+        searchHistory();
+    }
+
+    document.getElementById('currentDate').innerText = todayStr;
+
+    const currentY = new Date().getFullYear();
+    document.getElementById('reportMonth').value = new Date().getMonth() + 1;
+    const yearSelect = document.getElementById('reportYear');
+    for(let y = currentY; y <= currentY+5; y++){
+        let o = document.createElement('option'); o.value = y; o.textContent = y;
+        if(y === currentY) o.selected = true;
+        yearSelect.appendChild(o);
+    }
+
+    let currentType = 'KPay လွှဲ';
+    let allRecords = [];
+    let contacts = {};
+    let appConfig = { kOut:0.5, wOut:0.5, gOut:2.0, kIn:0.2, wIn:0.2, gIn:1.0, pass:"12345" };
+
+    function validatePhoneNumber(p) {
+        if(!p || p==='-') return true;
+        return /^(09|\+959)[0-9]{7,9}$/.test(p.replace(/\s/g,''));
+    }
+
+    function showPhoneError(show) {
+        let e = document.getElementById('phoneError'), p = document.getElementById('phone');
+        if(show){ e.style.display='block'; p.classList.add('error'); }
+        else { e.style.display='none'; p.classList.remove('error'); }
+    }
+
+    function roundComm(val) {
+        if(!val || val <= 0) return 0;
+        return Math.ceil(val / 100) * 100;
+    }
+
+    function showPhoneSuggestions() {
+        const q = document.getElementById('phone').value.trim();
+        const box = document.getElementById('suggestionsBox');
+        if(q.length < 8) { box.style.display='none'; return; }
+        const unique = new Map();
+        Object.entries(contacts).forEach(([ph, nm]) => { if(ph.includes(q)) unique.set(ph, nm); });
+        allRecords.forEach(r => { if(r.phone!=='-' && r.phone.includes(q) && !unique.has(r.phone)) unique.set(r.phone, r.note!=='-'?r.note:''); });
+        if(!unique.size) { box.style.display='none'; return; }
+        box.innerHTML = '';
+        unique.forEach((name, phone) => {
+            let d = document.createElement('div'); d.className = 'suggestion-item';
+            d.innerHTML = `<div class="suggestion-phone">📞 ${phone}</div><div class="suggestion-name">${name||'အမည်မပါ'}</div>`;
+            d.onclick = () => {
+                document.getElementById('phone').value = phone;
+                document.getElementById('note').value = name||'';
+                box.style.display = 'none';
+                calculateComm();
+            };
+            box.appendChild(d);
+        });
+        box.style.display = 'block';
+    }
+
+    document.addEventListener('click', function(e) {
+        let box = document.getElementById('suggestionsBox');
+        let pg = document.getElementById('phoneGroup');
+        if(box && pg && !pg.contains(e.target)) box.style.display = 'none';
+    });
+
+    window.onload = function() {
+        let s = localStorage.getItem('zarni_pro_records'); if(s) allRecords = JSON.parse(s);
+        let ct = localStorage.getItem('zarni_pro_contacts'); if(ct) contacts = JSON.parse(ct);
+        let c = localStorage.getItem('zarni_pro_config'); if(c) appConfig = {...appConfig,...JSON.parse(c)};
+        allRecords.forEach(r => {
+            if(r.phone && r.phone!=='-' && !contacts[r.phone])
+                contacts[r.phone] = r.note!=='-' ? r.note : '';
+        });
+        localStorage.setItem('zarni_pro_contacts', JSON.stringify(contacts));
+        updateStats(); searchHistory(); selectType(currentType); generateReport();
+    };
+
+    function switchTab(tab, el) {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-'+tab).classList.add('active');
+        el.classList.add('active');
+        if(tab==='history') searchHistory();
+        if(tab==='summary') generateReport();
+    }
+
+    function selectType(type) {
+        currentType = type;
+        document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active-out','active-in'));
+        let btn = document.getElementById('btn-'+type);
+        if(!btn) return;
+        let pg = document.getElementById('phoneGroup');
+        let ni = document.getElementById('note');
+        const noPhone = type.includes('Game') || type==='KPay ငွေထုတ်' || type==='WavePay ငွေထုတ်';
+        btn.classList.add(type.includes('ထုတ်') ? 'active-out' : 'active-in');
+        if(noPhone) {
+            pg.style.display = 'none';
+            document.getElementById('phone').value = '';
+            showPhoneError(false);
+            if(type.includes('Game') && !ni.value) ni.value = 'Game';
+            if(!type.includes('Game') && ni.value==='Game') ni.value = '';
+        } else {
+            pg.style.display = 'block';
+            document.getElementById('phoneLabel').innerHTML = type.includes('လွှဲ')
+                ? 'ဖုန်းနံပါတ် <span>(ငွေလွှဲရန်)</span>'
+                : 'ဖုန်းနံပါတ် <span>(Optional)</span>';
+            if(ni.value==='Game') ni.value = '';
+        }
+        calculateComm();
+    }
+
+    function calculateComm() {
+        let amt = parseFloat(document.getElementById('amount').value);
+        let ci = document.getElementById('commission');
+        if(!amt || amt<=0) { ci.value=''; return; }
+        let comm = 0;
+        if(currentType==='Game ထည့်') {
+            if(amt>=2000&&amt<=5000) comm=100;
+            else if(amt>5000&&amt<=10000) comm=200;
+            else if(amt>10000&&amt<=15000) comm=300;
+            else if(amt>15000&&amt<=20000) comm=400;
+            else if(amt>20000&&amt<50000) comm=500;
+            else if(amt>=50000) comm=(amt*appConfig.gIn)/100;
+        } else if(currentType==='Game ထုတ်') {
+            if(amt>=10000&&amt<=30000) comm=500;
+            else if(amt>30000&&amt<=50000) comm=1000;
+            else if(amt>50000&&amt<=70000) comm=1500;
+            else if(amt>70000&&amt<=100000) comm=2000;
+            else if(amt>100000) comm=(amt*appConfig.gOut)/100;
+        } else if(currentType.includes('လွှဲ')) {
+            if(amt>=1000&&amt<=19999) comm=100;
+            else if(amt>=20000&&amt<=100000) comm=200;
+            else { let r=currentType.includes('KPay')?appConfig.kIn:appConfig.wIn; comm=(amt*r)/100; }
+        } else if(currentType.includes('ထုတ်')) {
+            if(amt>=1000&&amt<=29999) comm=200;
+            else if(amt>=30000&&amt<=50000) comm=300;
+            else { let r=currentType.includes('KPay')?appConfig.kOut:appConfig.wOut; comm=(amt*r)/100; }
+        }
+        ci.value = roundComm(comm);
+    }
+
+    // ✅ saveRecord() - viewDateStr ကိုသုံးပြီး ရက်စွဲအတိုင်း မှတ်တယ်
+    function saveRecord() {
+        let amt = document.getElementById('amount').value;
+        let comm = document.getElementById('commission').value;
+        let phone = document.getElementById('phone').value.trim();
+        let note = document.getElementById('note').value.trim();
+        if(!amt || parseFloat(amt)<=0) { alert("ငွေပမာဏ ထည့်ပါ။"); return; }
+        const noPhone = currentType.includes('Game') || currentType==='KPay ငွေထုတ်' || currentType==='WavePay ငွေထုတ်';
+        if(!noPhone && phone && !validatePhoneNumber(phone)) { showPhoneError(true); alert("ဖုန်းနံပါတ်မှားနေပါသည်။"); return; }
+        showPhoneError(false);
+        if(currentType.includes('Game') && !note) note = 'Game';
+        
+        let rec = {
+            id: Date.now(),
+            date: viewDateStr,
+            time: new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+            type: currentType,
+            amount: parseFloat(amt),
+            comm: parseFloat(comm)||0,
+            phone: noPhone ? '-' : (phone||'-'),
+            note: note||'-'
+        };
+        
+        allRecords.unshift(rec);
+        localStorage.setItem('zarni_pro_records', JSON.stringify(allRecords));
+        if(!noPhone && phone && phone!=='-') {
+            contacts[phone] = note && note!=='-' ? note : (contacts[phone]||'');
+            localStorage.setItem('zarni_pro_contacts', JSON.stringify(contacts));
+        }
+        updateStats(); searchHistory();
+        document.getElementById('amount').value='';
+        document.getElementById('commission').value='';
+        if(!currentType.includes('Game')) document.getElementById('note').value='';
+        document.getElementById('phone').value='';
+        document.getElementById('suggestionsBox').style.display='none';
+        let btn = document.querySelector('.save-btn'), orig = btn.innerText;
+        btn.innerText = '✅ အောင်မြင်ပြီ';
+        setTimeout(()=>btn.innerText=orig, 1500);
+        if(currentType==='KPay လွှဲ' || currentType==='WavePay လွှဲ') showTransferOverlay(rec);
+        else if(currentType==='KPay ငွေထုတ်' || currentType==='WavePay ငွေထုတ်') showWithdrawOverlay(rec);
+        else if(currentType.includes('Game')) showGameOverlay(rec);
+    }
+
+    function getCommissionPercent(comm, amount) {
+        if(!comm || comm <= 0 || !amount || amount <= 0) return "";
+        let percent = (comm / amount) * 100;
+        return ` (${percent.toFixed(2)}%)`;
+    }
+
+    function showTransferOverlay(rec) {
+        const isKPay = rec.type==='KPay လွှဲ';
+        document.getElementById('actionIcon').innerText = '💸';
+        document.getElementById('actionTitle').style.color = 'var(--success-green)';
+        document.getElementById('actionTitle').innerText = 'ငွေလွှဲပေးပါ';
+        document.getElementById('actionSubtitle').innerText = (isKPay?'🔵 KBZPay':'🟡 WavePay') + ' မှတဆင့် လွှဲပေးပါ';
+        document.getElementById('actionAmountLabel').innerText = 'လွှဲမည့် ငွေပမာဏ';
+        document.getElementById('actionAmount').style.color = 'var(--success-green)';
+        document.getElementById('actionAmount').innerHTML = rec.amount.toLocaleString()+' <span style="font-size:13px">Ks</span>';
+        document.getElementById('actionDoneBtn').style.background = 'var(--success-green)';
+        document.getElementById('actionDoneBtn').style.color = '#000';
+        document.getElementById('actionDoneBtn').innerText = '✅ ငွေလွှဲ ပြီးပါပြီ';
+        let pr = document.getElementById('actionPhoneRow'), nr = document.getElementById('actionNameRow');
+        if(rec.phone!=='-'){ document.getElementById('actionPhone').innerText=rec.phone; pr.style.display='flex'; } else pr.style.display='none';
+        if(rec.note!=='-'){ document.getElementById('actionName').innerText=rec.note; nr.style.display='flex'; } else nr.style.display='none';
+        document.getElementById('actionCommWithPercent').innerHTML = rec.comm.toLocaleString() + ' Ks' + getCommissionPercent(rec.comm, rec.amount);
+        document.getElementById('actionOverlay').classList.add('show');
+    }
+
+    function showWithdrawOverlay(rec) {
+        const isKPay = rec.type==='KPay ငွေထုတ်';
+        document.getElementById('actionIcon').innerText = '💵';
+        document.getElementById('actionTitle').style.color = 'var(--danger-red)';
+        document.getElementById('actionTitle').innerText = 'ငွေထုတ်ပေးပါ';
+        document.getElementById('actionSubtitle').innerText = (isKPay?'🔵 KBZPay':'🟡 WavePay') + ' မှ ငွေထုတ်ပေးပါ';
+        document.getElementById('actionAmountLabel').innerText = 'ထုတ်ပေးရမည့် ငွေပမာဏ';
+        document.getElementById('actionAmount').style.color = 'var(--danger-red)';
+        document.getElementById('actionAmount').innerHTML = rec.amount.toLocaleString()+' <span style="font-size:13px">Ks</span>';
+        document.getElementById('actionDoneBtn').style.background = 'var(--danger-red)';
+        document.getElementById('actionDoneBtn').style.color = '#fff';
+        document.getElementById('actionDoneBtn').innerText = '✅ ငွေထုတ်ပေးပြီးပါပြီ';
+        document.getElementById('actionPhoneRow').style.display = 'none';
+        let nr = document.getElementById('actionNameRow');
+        if(rec.note!=='-'){ document.getElementById('actionName').innerText=rec.note; nr.style.display='flex'; } else nr.style.display='none';
+        document.getElementById('actionCommWithPercent').innerHTML = rec.comm.toLocaleString() + ' Ks' + getCommissionPercent(rec.comm, rec.amount);
+        document.getElementById('actionOverlay').classList.add('show');
+    }
+
+    function showGameOverlay(rec) {
+        document.getElementById('actionIcon').innerText = '🎮';
+        document.getElementById('actionTitle').style.color = 'var(--game-purple)';
+        document.getElementById('actionTitle').innerText = rec.type === 'Game ထည့်' ? 'Game ထည့်ပေးပါ' : 'Game ထုတ်ပေးပါ';
+        document.getElementById('actionSubtitle').innerText = rec.type === 'Game ထည့်' ? 'ဂိမ်းအကောင့်သို့ ထည့်ပေးပါ' : 'ဂိမ်းအကောင့်မှ ထုတ်ပေးပါ';
+        document.getElementById('actionAmountLabel').innerText = 'ပမာဏ';
+        document.getElementById('actionAmount').style.color = 'var(--game-purple)';
+        document.getElementById('actionAmount').innerHTML = rec.amount.toLocaleString()+' <span style="font-size:13px">Ks</span>';
+        document.getElementById('actionDoneBtn').style.background = 'var(--game-purple)';
+        document.getElementById('actionDoneBtn').style.color = '#fff';
+        document.getElementById('actionDoneBtn').innerText = '✅ ပြီးပါပြီ';
+        document.getElementById('actionPhoneRow').style.display = 'none';
+        let nr = document.getElementById('actionNameRow');
+        if(rec.note!=='-'){ document.getElementById('actionName').innerText=rec.note; nr.style.display='flex'; } else nr.style.display='none';
+        document.getElementById('actionCommWithPercent').innerHTML = rec.comm.toLocaleString() + ' Ks' + getCommissionPercent(rec.comm, rec.amount);
+        document.getElementById('actionOverlay').classList.add('show');
+    }
+
+    function closeActionOverlay() {
+        document.getElementById('actionOverlay').classList.remove('show');
+    }
+
+    function updateStats() {
+        const recs = allRecords.filter(r => r.date === viewDateStr);
+        document.getElementById('totalCount').innerText = recs.length + ' ခု';
+        document.getElementById('totalComm').innerText = recs.reduce((s,r)=>s+r.comm,0).toLocaleString() + ' Ks';
+    }
+
+    function searchHistory() {
+        let q = document.getElementById('searchInput').value.toLowerCase().trim();
+        let display = q===''
+            ? allRecords.filter(r => r.date === viewDateStr)
+            : allRecords.filter(r => (r.phone!=='-'&&r.phone.toLowerCase().includes(q)) || (r.note!=='-'&&r.note.toLowerCase().includes(q)));
+        renderHistory(display);
+    }
+
+    function renderHistory(records) {
+        let tb = document.getElementById('historyBody'); tb.innerHTML='';
+        if(!records.length){ tb.innerHTML='<tr><td colspan="4" class="no-data">မှတ်တမ်းမရှိ</td></tr>'; return; }
+        records.forEach(rec => {
+            let bg = rec.type.includes('Wave')?'bg-wave':rec.type.includes('Game')?'bg-game':'bg-kbz';
+            let col = rec.type.includes('ထုတ်')?'text-red':'';
+            let ct = rec.phone!=='-'
+                ? `<div style="font-weight:600;font-size:11px;">${rec.phone}</div><div class="row-details">${rec.note}</div>`
+                : `<div style="font-size:11px;">${rec.note}</div>`;
+            tb.innerHTML += `<tr>
+                <td><span class="badge ${bg}">${rec.type}</span><div class="row-details">📅 ${rec.date}<br>🕒 ${rec.time}</div></td>
+                <td>${ct}<button class="edit-btn" onclick="openEditModal(${rec.id})">✏️ ပြင်မည်</button></td>
+                <td class="${col}">${rec.amount.toLocaleString()}</td>
+                <td class="text-green">+${rec.comm.toLocaleString()}</td>
+            </tr>`;
+        });
+    }
+
+    // ====== EXPORT DAILY DATA WITH SHARE SUPPORT ======
+    async function exportDataAsFile() {
+        let r = allRecords.filter(r => r.date === todayStr);
+        if(!r.length){ 
+            alert("ယနေ့စာရင်း မရှိသေးပါ။"); 
+            return; 
+        }
+
+        let exportData = {
+            date: todayStr,
+            records: r,
+            exportTime: new Date().toISOString()
+        };
+        
+        let jsonStr = JSON.stringify(exportData, null, 2);
+        let safeDate = todayStr.replace(/[ ,/]/g, '_');
+        let fileName = `Zarni_Data_${safeDate}.json`;
+        
+        try {
+            let file = new File([jsonStr], fileName, { type: "application/json" });
+            
+            if (navigator.share && navigator.canShare) {
+                try {
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Zar Ni Mobile Data',
+                            text: `${todayStr} စာရင်းဖိုင်`
+                        });
+                        return;
+                    }
+                } catch (shareError) {
+                    console.log("Share error:", shareError);
+                }
+            }
+            
+            let blob = new Blob([jsonStr], { type: "application/json" });
+            let url = URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+            
+            alert("✅ ဖိုင်ကို Download လုပ်ပြီးပါပြီ။");
+            
+        } catch (error) {
+            console.error("Error:", error);
+            alert("❌ ဖိုင်ထုတ်ယူ၍မရပါ။");
+        }
+    }
+
+    // ====== IMPORT DATA WITH TIME DUPLICATE CHECK ======
+    function importDataFromFile() {
+        let fileInput = document.getElementById('importFileInput');
+        if(!fileInput.files.length) { 
+            alert("ပေါင်းထည့်ရန် File အရင်ရွေးချယ်ပါ။"); 
+            return; 
+        }
+
+        let file = fileInput.files[0];
+        let reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                let imported = JSON.parse(e.target.result);
+                let recordsToImport = imported.records || imported;
+                
+                if(!Array.isArray(recordsToImport) || !recordsToImport.length) {
+                    alert("ဖိုင်ထဲတွင် စာရင်းမပါဝင်ပါ။");
+                    return;
+                }
+                
+                let added = 0;
+                let duplicate = 0;
+                
+                recordsToImport.forEach(record => {
+                    let exists = allRecords.some(ex => 
+                        ex.date === record.date && 
+                        ex.time === record.time &&
+                        ex.type === record.type && 
+                        ex.amount === record.amount &&
+                        ex.phone === record.phone
+                    );
+                    
+                    if(!exists) {
+                        let newId = Date.now() + Math.random() * 10000 + added;
+                        let newRecord = {
+                            id: newId,
+                            date: record.date || todayStr,
+                            time: record.time || new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+                            type: record.type,
+                            amount: parseFloat(record.amount) || 0,
+                            comm: parseFloat(record.comm) || 0,
+                            phone: record.phone || '-',
+                            note: record.note || '-'
+                        };
+                        allRecords.unshift(newRecord);
+                        added++;
+                        
+                        if(newRecord.phone && newRecord.phone !== '-') {
+                            contacts[newRecord.phone] = newRecord.note !== '-' ? newRecord.note : (contacts[newRecord.phone] || '');
+                        }
+                    } else {
+                        duplicate++;
+                    }
+                });
+                
+                if(added) {
+                    allRecords.sort((a,b) => b.id - a.id);
+                    localStorage.setItem('zarni_pro_records', JSON.stringify(allRecords));
+                    localStorage.setItem('zarni_pro_contacts', JSON.stringify(contacts));
+                    updateStats(); 
+                    searchHistory(); 
+                    generateReport();
+                    alert(`စာရင်းအသစ် ${added} ခု အောင်မြင်စွာ ပေါင်းထည့်ပြီးပါပြီ။${duplicate ? `\n(ထပ်နေသော ${duplicate} ခုကို ကျော်လိုက်ပါသည်။)` : ''}`);
+                    fileInput.value = '';
+                } else {
+                    alert("စာရင်းအသစ် မပါဝင်ပါ။");
+                }
+            } catch(error) {
+                alert("File ဖတ်၍မရပါ။ JSON ဖိုင်မှန်ကန်မှု စစ်ဆေးပါ။");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    // ====== FULL BACKUP SYSTEM WITH SHARE SUPPORT ======
+    async function backupToFile() {
+        if(!allRecords.length && Object.keys(contacts).length === 0){ 
+            alert("Backup လုပ်ရန် Data မရှိသေးပါ။"); return; 
+        }
+
+        let backupData = {
+            records: allRecords,
+            contacts: contacts,
+            config: appConfig,
+            version: "2.1",
+            date: new Date().toISOString()
+        };
+        
+        let jsonStr = JSON.stringify(backupData, null, 2);
+        let safeDate = todayStr.replace(/ /g, '_').replace(/,/g, '');
+        let fileName = `Zarni_Full_Backup_${safeDate}.json`;
+
+        try {
+            let file = new File([jsonStr], fileName, { 
+                type: "application/json"
+            });
+            
+            if (navigator.share && navigator.canShare) {
+                try {
+                    if (navigator.canShare({ files: [file] })) {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Zarni Full Backup',
+                            text: 'Data အားလုံးပါဝင်သော Backup ဖိုင်ပါ။'
+                        });
+                        return;
+                    }
+                } catch (shareError) {
+                    console.log("Share error:", shareError);
+                }
+            }
+
+            let blob = new Blob([jsonStr], { 
+                type: "application/json"
+            });
+            let url = window.URL.createObjectURL(blob);
+            let a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            }, 300);
+            
+            alert("✅ Backup ဖိုင်ကို Download လုပ်ပြီးပါပြီ။");
+            
+        } catch(e) {
+            alert("❌ Backup File Download လုပ်၍ မရပါ။");
+        }
+    }
+
+    function showRestoreInput() {
+        let area = document.getElementById('restoreCodeArea');
+        if(area.style.display === 'none' || area.style.display === '') {
+            area.style.display = 'block';
+        } else {
+            area.style.display = 'none';
+            let fileInput = document.getElementById('restoreFileInput');
+            if(fileInput) fileInput.value = '';
+        }
+    }
+
+    // ✅ restoreFromFile() - Merge ပုံစံ (Data အကုန်မဖျက်ဘူး)
+    function restoreFromFile() {
+        let fileInput = document.getElementById('restoreFileInput');
+        if(!fileInput.files.length) { 
+            alert("Restore လုပ်ရန် Backup ဖိုင်ကို အရင်ရွေးချယ်ပါ။"); 
+            return; 
+        }
+
+        let file = fileInput.files[0];
+        let reader = new FileReader();
+
+        reader.onload = function(e) {
+            try {
+                let data = JSON.parse(e.target.result);
+                
+                if(data.records === undefined || data.contacts === undefined) {
+                    alert("❌ မှားယွင်းသော Backup ဖိုင် ဖြစ်ပါသည်။");
+                    return;
+                }
+
+                let added = 0;
+                let duplicate = 0;
+
+                data.records.forEach(record => {
+                    let exists = allRecords.some(ex => ex.id === record.id);
+                    
+                    if(!exists) {
+                        let newRecord = {
+                            id: record.id || Date.now() + Math.random() * 10000 + added,
+                            date: record.date || todayStr,
+                            time: record.time || new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}),
+                            type: record.type,
+                            amount: parseFloat(record.amount) || 0,
+                            comm: parseFloat(record.comm) || 0,
+                            phone: record.phone || '-',
+                            note: record.note || '-'
+                        };
+                        allRecords.push(newRecord);
+                        added++;
+                        
+                        if(newRecord.phone && newRecord.phone !== '-') {
+                            contacts[newRecord.phone] = newRecord.note !== '-' ? newRecord.note : (contacts[newRecord.phone] || '');
+                        }
+                    } else {
+                        duplicate++;
+                    }
+                });
+
+                if(data.contacts) {
+                    Object.entries(data.contacts).forEach(([phone, name]) => {
+                        if(!contacts[phone]) {
+                            contacts[phone] = name || '';
+                        }
+                    });
+                }
+
+                if(added) {
+                    allRecords.sort((a,b) => b.id - a.id);
+                    localStorage.setItem('zarni_pro_records', JSON.stringify(allRecords));
+                    localStorage.setItem('zarni_pro_contacts', JSON.stringify(contacts));
+                    
+                    if(data.config) {
+                        appConfig = {...appConfig, ...data.config};
+                        localStorage.setItem('zarni_pro_config', JSON.stringify(appConfig));
+                    }
+                    
+                    updateStats();
+                    searchHistory();
+                    generateReport();
+                    
+                    alert(`✅ စာရင်းအသစ် ${added} ခု အောင်မြင်စွာ ပေါင်းထည့်ပြီးပါပြီ။${duplicate ? `\n(ထပ်နေသော ${duplicate} ခုကို ကျော်လိုက်ပါသည်။)` : ''}`);
+                } else {
+                    alert("စာရင်းအသစ် မပါဝင်ပါ။");
+                }
+                
+                fileInput.value = '';
+                document.getElementById('restoreCodeArea').style.display = 'none';
+                closeModals();
+                
+            } catch(error) {
+                alert("❌ File ဖတ်၍မရပါ။");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function generateReport() {
+        let m = document.getElementById('reportMonth').value;
+        let y = document.getElementById('reportYear').value;
+        let f = allRecords.filter(r => {
+            let d = new Date(r.date);
+            return d.getFullYear().toString()===y && (m==='All'||(d.getMonth()+1).toString()===m);
+        });
+        let sum=0,kO=0,wO=0,gO=0,kI=0,wI=0,gI=0;
+        f.forEach(r => {
+            sum+=r.comm;
+            if(r.type==='KPay ငွေထုတ်') kO+=r.amount;
+            if(r.type==='WavePay ငွေထုတ်') wO+=r.amount;
+            if(r.type==='Game ထုတ်') gO+=r.amount;
+            if(r.type==='KPay လွှဲ') kI+=r.amount;
+            if(r.type==='WavePay လွှဲ') wI+=r.amount;
+            if(r.type==='Game ထည့်') gI+=r.amount;
+        });
+        document.getElementById('rTotalCount').innerText = f.length+' ခု';
+        document.getElementById('rKOut').innerText = kO.toLocaleString()+' Ks';
+        document.getElementById('rWOut').innerText = wO.toLocaleString()+' Ks';
+        document.getElementById('rGOut').innerText = gO.toLocaleString()+' Ks';
+        document.getElementById('rKIn').innerText = kI.toLocaleString()+' Ks';
+        document.getElementById('rWIn').innerText = wI.toLocaleString()+' Ks';
+        document.getElementById('rGIn').innerText = gI.toLocaleString()+' Ks';
+        document.getElementById('rComm').innerHTML = '+'+sum.toLocaleString()+' Ks';
+    }
+
+    function closeModals() {
+        document.getElementById('editModal').style.display='none';
+        document.getElementById('settingsModal').style.display='none';
+        document.getElementById('passwordPromptModal').style.display='none';
+    }
+
+    // ✅ openEditModal() - Amount နဲ့ Commission ပါ ဖွင့်တယ်
+    function openEditModal(id) {
+        let r = allRecords.find(r=>r.id===id); 
+        if(!r) return;
+        document.getElementById('editRecordId').value = r.id;
+        document.getElementById('editPhone').value = r.phone!=='-'?r.phone:'';
+        document.getElementById('editNote').value = r.note!=='-'?r.note:'';
+        document.getElementById('editAmount').value = r.amount || '';
+        document.getElementById('editCommission').value = r.comm || '';
+        document.getElementById('editModal').style.display='flex';
+    }
+
+    // ✅ saveEditData() - Amount နဲ့ Commission ပါ သိမ်းတယ်
+    function saveEditData() {
+        let id = parseInt(document.getElementById('editRecordId').value);
+        let i = allRecords.findIndex(r=>r.id===id);
+        if(i!==-1) {
+            let ph = document.getElementById('editPhone').value.trim()||'-';
+            let nt = document.getElementById('editNote').value.trim()||'-';
+            let amt = parseFloat(document.getElementById('editAmount').value);
+            let comm = parseFloat(document.getElementById('editCommission').value);
+            
+            allRecords[i].phone = ph;
+            allRecords[i].note = nt;
+            if(amt && amt > 0) allRecords[i].amount = amt;
+            if(comm && comm >= 0) allRecords[i].comm = comm;
+            
+            if(ph!=='-'){ 
+                contacts[ph] = nt!=='-'?nt:(contacts[ph]||''); 
+                localStorage.setItem('zarni_pro_contacts',JSON.stringify(contacts)); 
+            }
+            localStorage.setItem('zarni_pro_records', JSON.stringify(allRecords));
+            updateStats(); 
+            searchHistory(); 
+            generateReport();
+            alert("✅ စာရင်း ပြင်ဆင်ပြီးပါပြီ။");
+        }
+        closeModals();
+    }
+
+    function openSettings() {
+        document.getElementById('cfgKIn').value=appConfig.kIn;
+        document.getElementById('cfgKOut').value=appConfig.kOut;
+        document.getElementById('cfgWIn').value=appConfig.wIn;
+        document.getElementById('cfgWOut').value=appConfig.wOut;
+        document.getElementById('cfgGIn').value=appConfig.gIn;
+        document.getElementById('cfgGOut').value=appConfig.gOut;
+        document.getElementById('settingsModal').style.display='flex';
+    }
+
+    function saveSettings() {
+        appConfig.kIn=parseFloat(document.getElementById('cfgKIn').value)||0;
+        appConfig.kOut=parseFloat(document.getElementById('cfgKOut').value)||0;
+        appConfig.wIn=parseFloat(document.getElementById('cfgWIn').value)||0;
+        appConfig.wOut=parseFloat(document.getElementById('cfgWOut').value)||0;
+        appConfig.gIn=parseFloat(document.getElementById('cfgGIn').value)||0;
+        appConfig.gOut=parseFloat(document.getElementById('cfgGOut').value)||0;
+        localStorage.setItem('zarni_pro_config', JSON.stringify(appConfig));
+        calculateComm(); closeModals(); alert("Settings သိမ်းပြီး");
+    }
+
+    function switchMainSettingTab(tab) {
+        document.querySelectorAll('.settings-main-tab').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.settings-main-panel').forEach(panel => panel.classList.remove('active-panel'));
+        if(tab === 'percent') {
+            document.querySelector('.settings-main-tab:nth-child(1)').classList.add('active');
+            document.getElementById('main-panel-percent').classList.add('active-panel');
+        } else if(tab === 'password') {
+            document.querySelector('.settings-main-tab:nth-child(2)').classList.add('active');
+            document.getElementById('main-panel-password').classList.add('active-panel');
+        } else if(tab === 'danger') {
+            document.querySelector('.settings-main-tab:nth-child(3)').classList.add('active');
+            document.getElementById('main-panel-danger').classList.add('active-panel');
+        }
+    }
+
+    function switchPercentSubTab(tab) {
+        document.querySelectorAll('.percent-sub-tab').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.percent-sub-panel').forEach(panel => panel.classList.remove('active-panel'));
+        if(tab === 'kpay') {
+            document.querySelector('.percent-sub-tab:nth-child(1)').classList.add('active');
+            document.getElementById('percent-panel-kpay').classList.add('active-panel');
+        } else if(tab === 'wave') {
+            document.querySelector('.percent-sub-tab:nth-child(2)').classList.add('active');
+            document.getElementById('percent-panel-wave').classList.add('active-panel');
+        } else if(tab === 'game') {
+            document.querySelector('.percent-sub-tab:nth-child(3)').classList.add('active');
+            document.getElementById('percent-panel-game').classList.add('active-panel');
+        }
+    }
+
+    function changePassword() {
+        let current = document.getElementById('currentPwd').value;
+        let newPwd = document.getElementById('newPwd').value;
+        let confirm = document.getElementById('confirmPwd').value;
+        
+        if(current !== appConfig.pass) {
+            alert("လက်ရှိ Password မှားနေပါသည်။");
+            return;
+        }
+        if(newPwd.length < 3) {
+            alert("Password အသစ်သည် အနည်းဆုံး ၃ လုံးရှိရပါမည်။");
+            return;
+        }
+        if(newPwd !== confirm) {
+            alert("Password အသစ်နှင့် အတည်ပြုမကိုက်ပါ။");
+            return;
+        }
+        appConfig.pass = newPwd;
+        localStorage.setItem('zarni_pro_config', JSON.stringify(appConfig));
+        document.getElementById('currentPwd').value = '';
+        document.getElementById('newPwd').value = '';
+        document.getElementById('confirmPwd').value = '';
+        alert("Password ပြောင်းလဲပြီးပါပြီ။");
+        closeModals();
+    }
+
+    function showDeleteConfirm() {
+        document.getElementById('passwordPromptModal').style.display = 'flex';
+        document.getElementById('deletePassword').value = '';
+    }
+
+    function closePasswordPrompt() {
+        document.getElementById('passwordPromptModal').style.display = 'none';
+    }
+
+    function confirmDeleteAll() {
+        let enteredPwd = document.getElementById('deletePassword').value;
+        if(enteredPwd !== appConfig.pass) {
+            alert("Password မှားနေပါသည်။ ဖျက်၍မရပါ။");
+            closePasswordPrompt();
+            return;
+        }
+        if(confirm("သတိထားပါ။ ဒေတာအားလုံး ပြန်မရနိုင်အောင် ဖျက်ပစ်မှာဖြစ်ပါတယ်။ ဆက်လက်လုပ်ဆောင်မှာလား?")) {
+            allRecords = [];
+            contacts = {};
+            localStorage.setItem('zarni_pro_records', JSON.stringify(allRecords));
+            localStorage.setItem('zarni_pro_contacts', JSON.stringify(contacts));
+            updateStats();
+            searchHistory();
+            generateReport();
+            alert("စာရင်းအားလုံးကို ဖျက်ပစ်လိုက်ပြီးပါပြီ။");
+        }
+        closePasswordPrompt();
+        closeModals();
+    }
+</script>
+</body>
+</html>
